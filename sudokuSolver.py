@@ -3,22 +3,31 @@ import cv2 as cv
 from matplotlib import pyplot as plt
 import numpy as np
 
-IMAGE_PATH = ''
 
-reader = easyocr.Reader(['en'], gpu=False)
-result = reader.readtext(IMAGE_PATH)
+initialWidth = 66
 
-img = cv.imread(IMAGE_PATH)
+for i in range(9):
 
-for detection in result:
-    top_left = tuple([int(val) for val in detection[0][0]])
-    bottom_right = tuple([int(val) for val in detection[0][2]])
-    text = detection[1]
-    font = cv.FONT_HERSHEY_SIMPLEX
-    img = cv.rectangle(img, top_left, bottom_right, (0, 255, 0), 5)
-    img = cv.putText(img, text, top_left, font, 2, (255, 255, 255), 2, cv.LINE_AA)
+    img = cv.imread('Sudoku/sudoku.png')
 
-plt.figure(figsize=(10, 10))
-plt.imshow(img)
-plt.show()
+    blank = np.zeros(img.shape[:2], dtype='uint8')
+
+    mask = cv.circle(
+        blank, (initialWidth, 198), 66, 255, -1)
+
+    masked = cv.bitwise_and(img, img, mask=mask)
+    cv.imshow('Masked Image', masked)
+
+    reader = easyocr.Reader(['en'], gpu=False)
+
+    result = reader.readtext(masked)
+
+    print(result)
+
+    initialWidth += 133
+
+    print(i)
+
+cv.waitKey(0)
+
 
