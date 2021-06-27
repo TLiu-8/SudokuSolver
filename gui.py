@@ -1,15 +1,20 @@
 # PyQt imports
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import QObject, pyqtSlot
+from PyQt5.QtCore import QObject, pyqtSlot, Qt
+from PyQt5.QtGui import QPixmap, QColor
 import sys
+import easyocr
+import cv2 as cv
+from matplotlib import pyplot as plt
+import numpy as np
 
 
 class LandingScreen(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(LandingScreen, self).__init__()
-        uic.loadUi('UI/sudoku.ui', self)
+        uic.loadUi('Sudoku/UI/sudoku.ui', self)
         self.show()
 
         self.startButton.clicked.connect(self.startSlot)
@@ -23,8 +28,11 @@ class MainScreen(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(MainScreen, self).__init__()
-        uic.loadUi('UI/results.ui', self)
+        uic.loadUi('Sudoku/UI/results.ui', self)
         self.show()
+
+        self.display_height = 225
+        self.display_width = 225
 
         self.backButton.clicked.connect(self.backSlot)
         self.browseButton.clicked.connect(self.browseSlot)
@@ -56,8 +64,47 @@ class MainScreen(QtWidgets.QMainWindow):
         self.paths = filenames[0]
         self.name = self.paths[0]
 
-        a = Solver([[0, 0, 0, 2, 6, 0, 7, 0, 1], [6, 8, 0, 0, 7, 0, 0, 9, 0], [1, 9, 0, 0, 0, 4, 5, 0, 0], [8, 2, 0, 1, 0, 0, 0, 4, 0], [
-            0, 0, 4, 6, 0, 2, 9, 0, 0], [0, 5, 0, 0, 0, 3, 0, 2, 8], [0, 0, 9, 3, 0, 0, 0, 7, 4], [0, 4, 0, 0, 5, 0, 0, 3, 6], [7, 0, 3, 0, 1, 8, 0, 0, 0]])
+        img = cv.imread(self.name)
+        self.imageLabel.setPixmap(self.convert_cv_qt(img))
+        #img = cv.resize(img, (0, 0), fx=0.5, fy=0.5)
+
+        h, w, c = img.shape
+
+        initialWidth = w/18
+        radius = w/18
+        widthIncrement = w/9
+        initialHeight = h/18
+        heightIncrement = h/9
+        reader = easyocr.Reader(['en'], gpu=False)
+
+        grid = []
+        for j in range(9):
+            temp = []
+            for i in range(9):
+
+                blank = np.zeros(img.shape[:2], dtype='uint8')
+
+                mask = cv.circle(
+                    blank, (int(initialWidth), int(initialHeight)), 66, 255, -1)
+
+                masked = cv.bitwise_and(img, img, mask=mask)
+                #cv.imshow('Masked Image', masked)
+
+                result = reader.readtext(masked)
+                print(result)
+                if (result == []):
+                    temp.append(0)
+                else:
+                    temp.append(int(result[0][1]))
+
+                initialWidth += widthIncrement
+
+                # print(i)
+            initialWidth = w/18
+            initialHeight += heightIncrement
+            grid.append(temp)
+
+        a = Solver(grid)
 
         self.answerSlot(a.get_solution())
 
@@ -70,6 +117,18 @@ class MainScreen(QtWidgets.QMainWindow):
                 counter = counter+1
 
                 # setting up window
+
+    def convert_cv_qt(self, img):
+        rgb = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+
+        h, w, c = rgb.shape
+        bytes_per_line = c * w
+
+        convert_to_Qt_format = QtGui.QImage(
+            rgb.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+        p = convert_to_Qt_format.scaled(
+            self.display_width, self.display_height, Qt.KeepAspectRatio)
+        return QPixmap.fromImage(p)
 
 
 class Solver():
