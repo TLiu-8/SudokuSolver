@@ -1,5 +1,5 @@
 # SudokuSolver
-https://cdn.discordapp.com/attachments/718253662870437888/858537435204681749/unknown.png
+![alt text](https://cdn.discordapp.com/attachments/718253662870437888/858537435204681749/unknown.png)
 
 ## Inspiration
 We see grandpas struggling with their sudoku puzzle every morning at the breakfast table. Sometimes they do manage to solve it, however, they aren't sure if it is correct. With SudokuSolver, whether you are stuck on your sudoku puzzle or if you want to check if your solution is correct, our algorithm will produce the accurate solution to your puzzle.
@@ -29,4 +29,4 @@ One of the challenges we ran into was using OCR to read the numbers from the sud
 One of our next steps is to find a way to speed up the calculation time of the algorithm. Currently, the EasyOCR library takes a lot of time to read the number from each grid square. We will find a way to speed up the calculation time and make the process faster by learning ML models like CNNs and more.
 We'd also like to add more functionality like real-time video loading, giving the option for users to input numbers directly into the GUI instead of uploading an image, or bringing the project to app development.
 
-https://cdn.discordapp.com/attachments/718253662870437888/858537463484252170/unknown.png
+![alt text](https://cdn.discordapp.com/attachments/718253662870437888/858537463484252170/unknown.png)
