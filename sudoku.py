@@ -30,7 +30,7 @@ class LandingScreen(QtWidgets.QMainWindow):
 
         # loading ui
         super(LandingScreen, self).__init__()
-        uic.loadUi('Sudoku/UI/sudoku.ui', self)
+        uic.loadUi('/UI/sudoku.ui', self)
         self.show()
 
         # button handlers
@@ -54,7 +54,7 @@ class MainScreen(QtWidgets.QMainWindow):
 
         # loading ui
         super(MainScreen, self).__init__()
-        uic.loadUi('Sudoku/UI/results.ui', self)
+        uic.loadUi('/UI/results.ui', self)
         self.show()
 
         # shape of image loader
